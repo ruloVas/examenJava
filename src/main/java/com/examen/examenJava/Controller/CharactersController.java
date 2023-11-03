@@ -1,22 +1,22 @@
 package com.examen.examenJava.controller;
 
-import java.util.Arrays;
 import java.util.List;
+
+import javax.websocket.server.PathParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.examen.examenJava.model.dto.CharactersReponseOutDto;
 import com.examen.examenJava.service.CharacterService;
 
-import jakarta.websocket.server.PathParam;
-
+@CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
-@ResponseBody
 @RequestMapping("/examen")
 public class CharactersController {
 
@@ -26,10 +26,10 @@ public class CharactersController {
     private CharacterService characterService;
 	
 	@GetMapping("/charactersList")
-    public List<Object> charactersList() {
+    public List<CharactersReponseOutDto> charactersList() {
 		log.info("Consulta CharactersController - charactersList() ");
-		Object[] result = characterService.getCharactersList();
-        return Arrays.asList(result);
+		return characterService.getCharactersList();
+         
     }
 	
 	@GetMapping("/charactersList/{characterId}")

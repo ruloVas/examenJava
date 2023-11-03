@@ -1,12 +1,12 @@
 package com.examen.examenJava.service;
 
+import java.util.List;
 
-import org.springframework.stereotype.Service;
+import com.examen.examenJava.model.dto.CharactersReponseOutDto;
 
-@Service
 public interface CharacterService {
 
-	public Object[] getCharactersList();
+	public List<CharactersReponseOutDto> getCharactersList();
 
 	public Object[] getCharacter(String characterId);
 	
