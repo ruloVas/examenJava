@@ -5,7 +5,7 @@ import java.util.List;
 import com.examen.examenJava.model.dto.CharacterReponseOutDto;
 import com.examen.examenJava.model.dto.CharactersReponseOutDto;
 
-public interface CharacterService {
+public interface ICharacterService {
 
 	public List<CharactersReponseOutDto> getCharactersList();
 

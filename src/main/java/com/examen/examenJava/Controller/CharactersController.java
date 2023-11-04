@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.examen.examenJava.model.dto.CharacterReponseOutDto;
 import com.examen.examenJava.model.dto.CharactersReponseOutDto;
-import com.examen.examenJava.service.CharacterService;
+import com.examen.examenJava.service.ICharacterService;
 
 /**
  * CharactersController
@@ -30,7 +30,7 @@ public class CharactersController {
 	private static final Log log = LogFactory.getLog(CharactersController.class);
 	
 	@Autowired
-    private CharacterService characterService;
+    private ICharacterService characterService;
 	
 	/**
      * Metodo obtiene la lista de Personajes de Marvel

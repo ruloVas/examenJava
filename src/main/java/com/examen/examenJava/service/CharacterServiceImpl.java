@@ -20,7 +20,7 @@ import com.examen.examenJava.model.dto.CharactersReponseOutDto;
 import com.examen.examenJava.model.dto.ResultsReponseDto;
 
 @Service
-public class CharacterServiceImpl implements CharacterService {
+public class CharacterServiceImpl implements ICharacterService {
 	
 	private static final Log log = LogFactory.getLog(CharacterServiceImpl.class);
 
