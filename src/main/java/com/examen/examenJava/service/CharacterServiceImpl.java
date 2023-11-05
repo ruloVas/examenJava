@@ -1,11 +1,14 @@
 package com.examen.examenJava.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.examen.examenJava.model.Binnacle;
 import com.examen.examenJava.model.dto.CharacterReponseOutDto;
 import com.examen.examenJava.model.dto.CharactersReponseDto;
 import com.examen.examenJava.model.dto.CharactersReponseOutDto;
@@ -23,6 +27,10 @@ import com.examen.examenJava.model.dto.ResultsReponseDto;
 public class CharacterServiceImpl implements ICharacterService {
 	
 	private static final Log log = LogFactory.getLog(CharacterServiceImpl.class);
+	private static final  DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
+	@Autowired
+    private IBinnacleService binnalceService;
 
 	@Override
 	public List<CharactersReponseOutDto> getCharactersList() {
@@ -57,7 +65,8 @@ public class CharacterServiceImpl implements ICharacterService {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<CharactersReponseDto> responseEntity = restTemplate.exchange(uri, HttpMethod.GET,
 					entity, CharactersReponseDto.class);
-			response = responseEntity.getBody();	
+			response = responseEntity.getBody();
+			binnalceService.save(new Binnacle(new Long(0),"getCharactersAPIList",uri.substring(0,54), LocalDateTime.now().format(DATE_FORMATTER)));
 		} catch (Exception e) {
 			log.error("Error CharacterService - getCharactersAPIList ", e);
 			response = null; 
@@ -89,7 +98,7 @@ public class CharacterServiceImpl implements ICharacterService {
 	private CharactersReponseDto getCharacter(String characterId) {
 		CharactersReponseDto response = new CharactersReponseDto();
 		try {
-			log.info("Se consulta API Marvel con Id:"+characterId);
+			log.info("Se consulta API Marvel con Id: "+characterId);
 			String uri = "https://gateway.marvel.com/v1/public/characters/"
 							.concat(characterId)
 							.concat("?apikey=273ef25b253da9d9b3985e19e8ee6d0a&")
@@ -102,7 +111,8 @@ public class CharacterServiceImpl implements ICharacterService {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<CharactersReponseDto> responseEntity = restTemplate.exchange(uri, HttpMethod.GET,
 					entity, CharactersReponseDto.class);
-			response = responseEntity.getBody();	
+			response = responseEntity.getBody();
+			binnalceService.save(new Binnacle(new Long(0),"getCharacterById",uri.substring(0,48), LocalDateTime.now().format(DATE_FORMATTER)));
 		} catch (Exception e) {
 			log.error("Error CharacterService - getCharacter ", e);
 			response = null;

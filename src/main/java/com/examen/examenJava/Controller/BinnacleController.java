@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class BinnacleController {
      * Metodo que ontiene los registros de la bitacora
      * @return 
      */
-	@GetMapping("/logsList")
+	@GetMapping("/logList")
     public  List<Binnacle> findAll() {
 		log.info("Consulta BinnacleController - findAll() ");
 		return binnalceService.findAll();      
@@ -46,7 +47,7 @@ public class BinnacleController {
      * @param String characterId
      * @return 
      */
-	@GetMapping("/saveLog")
+	@PostMapping("/saveLog")
     public Binnacle save(@RequestBody Binnacle binaccle) {
 		log.info("Consulta BinnacleController - getCharacterById() ");
 		binnalceService.save(binaccle);
