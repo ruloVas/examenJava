@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class CharacterServiceImpl implements ICharacterService {
 	
 	private static final Log log = LogFactory.getLog(CharacterServiceImpl.class);
 	private static final  DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final  String URL_API     = "https://gateway.marvel.com/v1/public/characters";
+	private static final  String API_KEY     = "apikey=273ef25b253da9d9b3985e19e8ee6d0a";
+	private static final  String TS          = "ts=1";
+	private static final  String HASH        = "hash=21a48d871694bb6b2ffe65bfec7a6b0e";
 	
 	@Autowired
     private IBinnacleService binnalceService;
@@ -36,7 +41,7 @@ public class CharacterServiceImpl implements ICharacterService {
 	public List<CharactersReponseOutDto> getCharactersList() {
 		List<CharactersReponseOutDto> character = new ArrayList<CharactersReponseOutDto>();
 		log.info("Se obtiene el listado de los personajes");
-		CharactersReponseDto response = this.getCharactersAPIList();
+		CharactersReponseDto response = this.getCharactersAPIList().getBody();
 		if(response != null) {
 			List<ResultsReponseDto> results = response.getData().getResults();
 			for(ResultsReponseDto result : results) {
@@ -46,18 +51,18 @@ public class CharacterServiceImpl implements ICharacterService {
 				item.setDescription(result.getDescription().isEmpty() ? "Personaje de Marvel" : result.getDescription());
 				character.add(item);
 			}
+			binnalceService.save(new Binnacle(new Long(0),"getCharactersList",URL_API, 
+					LocalDateTime.now().format(DATE_FORMATTER)));
 		}
 		return character;
 	}
 	
-	private CharactersReponseDto getCharactersAPIList() {
-		CharactersReponseDto response = new CharactersReponseDto();
+	@Override
+	public ResponseEntity<CharactersReponseDto> getCharactersAPIList() {
+		ResponseEntity<CharactersReponseDto> response = new ResponseEntity<CharactersReponseDto>(HttpStatus.OK);
 		try {
 			log.info("Se consulta API Marvel");
-			String uri = "https://gateway.marvel.com/v1/public/characters?"
-							.concat("apikey=273ef25b253da9d9b3985e19e8ee6d0a&")
-							.concat("ts=1&")
-							.concat("hash=21a48d871694bb6b2ffe65bfec7a6b0e");
+			String uri = String.format("%s?%s&%s&%s", URL_API,API_KEY,TS,HASH);
 			HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -65,8 +70,8 @@ public class CharacterServiceImpl implements ICharacterService {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<CharactersReponseDto> responseEntity = restTemplate.exchange(uri, HttpMethod.GET,
 					entity, CharactersReponseDto.class);
-			response = responseEntity.getBody();
-			binnalceService.save(new Binnacle(new Long(0),"getCharactersAPIList",uri.substring(0,54), LocalDateTime.now().format(DATE_FORMATTER)));
+			response = responseEntity;
+			
 		} catch (Exception e) {
 			log.error("Error CharacterService - getCharactersAPIList ", e);
 			response = null; 
@@ -77,7 +82,7 @@ public class CharacterServiceImpl implements ICharacterService {
 	@Override
 	public CharacterReponseOutDto getCharacterById(String characterId) {
 		log.info("Se obtiene el listado de los personajes");
-		CharactersReponseDto response = this.getCharacter(characterId);
+		CharactersReponseDto response = this.getCharacter(characterId).getBody();
 		CharacterReponseOutDto character = new CharacterReponseOutDto();
 		if(response != null) {
 			List<ResultsReponseDto> results = response.getData().getResults();
@@ -91,19 +96,18 @@ public class CharacterServiceImpl implements ICharacterService {
 				character.setEventsParticipation(result.getEvents().getAvailable());
 				character.setEventsList(result.getEvents().getItems());
 			}
+			binnalceService.save(new Binnacle(new Long(0),"getCharacterById",String.format("%s/{%s}", URL_API,characterId), 
+					LocalDateTime.now().format(DATE_FORMATTER)));
 		}
 		return character;
 	}
 	
-	private CharactersReponseDto getCharacter(String characterId) {
-		CharactersReponseDto response = new CharactersReponseDto();
+	@Override
+	public ResponseEntity<CharactersReponseDto> getCharacter(String characterId) {
+		ResponseEntity<CharactersReponseDto> response = new ResponseEntity<CharactersReponseDto>(HttpStatus.OK);
 		try {
 			log.info("Se consulta API Marvel con Id: "+characterId);
-			String uri = "https://gateway.marvel.com/v1/public/characters/"
-							.concat(characterId)
-							.concat("?apikey=273ef25b253da9d9b3985e19e8ee6d0a&")
-							.concat("ts=1&")
-							.concat("hash=21a48d871694bb6b2ffe65bfec7a6b0e");
+			String uri = String.format("%s/%s?%s&%s&%s", URL_API,characterId,API_KEY,TS,HASH);
 			HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -111,8 +115,7 @@ public class CharacterServiceImpl implements ICharacterService {
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<CharactersReponseDto> responseEntity = restTemplate.exchange(uri, HttpMethod.GET,
 					entity, CharactersReponseDto.class);
-			response = responseEntity.getBody();
-			binnalceService.save(new Binnacle(new Long(0),"getCharacterById",uri.substring(0,48), LocalDateTime.now().format(DATE_FORMATTER)));
+			response = responseEntity;
 		} catch (Exception e) {
 			log.error("Error CharacterService - getCharacter ", e);
 			response = null;
