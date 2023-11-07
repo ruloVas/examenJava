@@ -15,7 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.examen.examenJava.model.dto.CharactersReponseDto;
 
-public class CharacterServiceImplTest {
+class CharacterServiceImplTest {
 	
 	@Mock
 	private ICharacterService service;
